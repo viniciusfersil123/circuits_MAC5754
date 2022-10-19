@@ -11,6 +11,8 @@ Repositório para desenvolvimento da linguagem Circuits para disciplina MAC5754
 
 ## 📖 Referências
 
-[Programming Language Syntax](https://www.youtube.com/watch?v=MMxMeX5emUA&list=PLWi7UcbOD_0uAqjcezZxsbSaYwuMSAKxM) 
+[Programming Language Syntax](https://www.youtube.com/watch?v=MMxMeX5emUA&list=PLWi7UcbOD_0uAqjcezZxsbSaYwuMSAKxM)
+
+[Introduction to Grammars and BNF](https://www.youtube.com/watch?v=F25ez8s3AsQ)
 
 
