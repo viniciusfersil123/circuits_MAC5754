@@ -1,1 +1,1 @@
-10 ohms ++ 10 ohms;
+11 ohms ++ 11 ohms;
