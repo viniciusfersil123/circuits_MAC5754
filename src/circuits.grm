@@ -1,0 +1,31 @@
+%name Circuits;
+
+%defs (
+    open ParseTree
+    fun getResistence x = (TypeChecker.extractResistance x)
+);
+
+%tokens
+    : KW_ohms ("ohms") | KW_series ("++") | REAL of Real.real
+    ;
+
+%keywords
+    KW_ohms,
+    KW_series,
+    ;
+
+expr
+    | %try funcs_resistor => (funcs_resistor)
+    ;
+
+valor
+    : REAL => (ParseTree.Const (Grammar.Primitivo (Grammar.Float_ REAL)))
+    ;
+
+resistor
+    : valor KW_ohms
+    ;
+
+funcs_resistor
+    : resistor KW_series resistor
+    ;
