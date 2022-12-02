@@ -36,15 +36,18 @@ datatype token =
     | TRUE
     | FALSE
     | LITERAL of string
-    | INTEGER_TYPE
-    | REAL_TYPE
-    | BOOLEAN_TYPE
+    | INT_TYPE
+    | FLOAT_TYPE
+    | BOOL_TYPE
     | STRING_TYPE
     | OHMS
     | AMPERE
     | VOLTS
     (* | INTEGER of int
     | REAL of real *)
+
+	(* | substituí  INTEGER_TYPE por INT_TYPE, REAL_TYPE por FLOAT_TYPE e 
+	/ BOOLEAN_TYPE por BOOL_TYPE para manter padrão do lex *)
 
 fun tokenize nil = nil
     | tokenize ("+" :: strList) = (PLUS :: tokenize strList)
@@ -67,12 +70,12 @@ fun tokenize nil = nil
     | tokenize ("OR" :: strList) = (OR :: tokenize strList)
     | tokenize ("AND" :: strList) = (AND :: tokenize strList)
     | tokenize ("NOT" :: strList) = (NOT :: tokenize strList)
-    | tokenize ("True" :: strList) = (TRUE :: tokenize strList)
-    | tokenize ("False" :: strList) = (FALSE :: tokenize strList)
-    | tokenize ("Integer" :: strList) = (INTEGER_TYPE :: tokenize strList)
-    | tokenize ("Real" :: strList) = (REAL_TYPE :: tokenize strList)
-    | tokenize ("Boolean" :: strList) = (BOOLEAN_TYPE :: tokenize strList)
-    | tokenize ("String" :: strList) = (STRING_TYPE :: tokenize strList)
+    | tokenize ("true" :: strList) = (TRUE :: tokenize strList)
+    | tokenize ("false" :: strList) = (FALSE :: tokenize strList)
+    | tokenize ("int" :: strList) = (INT_TYPE :: tokenize strList)
+    | tokenize ("float" :: strList) = (FLOAT_TYPE :: tokenize strList)
+    | tokenize ("bool" :: strList) = (BOOL_TYPE :: tokenize strList)
+    | tokenize ("string" :: strList) = (STRING_TYPE :: tokenize strList)
     | tokenize ("ohms" :: strList) = (OHMS :: tokenize strList)
     | tokenize ("ampere" :: strList) = (AMPERE :: tokenize strList)
     | tokenize ("volts" :: strList) = (VOLTS :: tokenize strList)
