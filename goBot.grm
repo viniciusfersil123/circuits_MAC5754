@@ -1,0 +1,232 @@
+(* goBot definitions for ML-Yacc *)
+type Mem = (string*int) list
+type Trans = (Mem -> Mem)
+
+fun printMem (sigma:Mem, s:string, i :int) = (case sigma of nil => print(s^"FIM\n")
+      | (x::xs) => let val z = Int.toString(i)^" "^ (#1 x) ^"="^Int.toString(#2 x) ^ "\n"
+                                 in printMem(xs,s^z,i+1) end)
+
+fun printLS (lista:string list, s:string) = (case lista of nil => print(s^"FIM\n")
+                                          | (x::xs) => printLS(xs,s^x) )
+                           
+fun defVarSig (s: string, t :string, sigma:Mem) = (*let val z = printMem sigma in*) ( 
+    case sigma of nil => [(s,~999)]
+                | (x::xs) => ( if ((#1 x) = s) then let val z = print("Variável "^s^" ja declarada!\n") in sigma end
+                else x::defVarSig (s, t, xs) )
+    )
+                
+fun lookupSig (s: string, sigma:Mem) = (*let val z = printMem sigma in *)(
+        case sigma of nil => GoBotConfig.printErro("Warning: Variável "^(s)^" não declarada!\n") 
+                | (x::xs) => ( if ((#1 x) = (s)) then  (#2 x) 
+                               else  lookupSig(s,xs) ) 
+        ) (*end*)
+                               
+fun fazAtribSig (y: (string * int), sigma:Mem) = (*let val z = printMem sigma in *)
+	(case sigma of nil => let val x = print("Variável "^(#1 y)^" não declarada!\n") in sigma end
+    | (x::xs) =>	 (if (#1 x) = (#1 y) then y::xs else x::fazAtribSig(y,xs) )
+    ) (* end *)
+
+
+fun getLin (sigma:Mem) = lookupSig("GBlinha",sigma);
+fun getCol (sigma:Mem) = lookupSig("GBcoluna",sigma);
+fun getLinCol (sigma:Mem) = (lookupSig("GBlinha",sigma),lookupSig("GBcoluna",sigma));
+fun getEnergia (sigma:Mem) = (lookupSig("GBenergia",sigma));
+
+fun printHowAmI (sigma:Mem) = let
+    val lin = Int.toString(getLin( sigma))
+    val col = Int.toString(getCol( sigma))
+    val en = Int.toString(getEnergia( sigma))
+    in
+    print(lin^" "^col^" "^en^"\n")
+    end
+
+
+fun temEnergia(sigma:Mem) = (
+    let val energia = getEnergia(sigma)
+    in if (energia > 0) then true else false
+    end
+    )
+
+fun reduzEnergia(sigma:Mem, custo:int) = (
+    let val energia = getEnergia(sigma);
+    in fazAtribSig ( ("GBenergia",energia - custo), sigma)
+    end
+    )
+
+fun move(sigma:Mem, movedir:Trans) = (
+    if (temEnergia(sigma)) then reduzEnergia(movedir(sigma),GoBotConfig.moveCost)
+    else sigma
+    )
+
+
+fun moveA(sigma:Mem) = (
+    let
+		val (lin,col) = (getLinCol (sigma))
+	in
+		if(lin+1 > (GoBotConfig.altura) orelse GoBotConfig.getMuroPos( (lin+1,col) ) = 1)
+          then sigma 
+          else fazAtribSig( ("GBlinha",lin+1), sigma)
+	end)
+	
+fun moveB(sigma:Mem) = (
+    let
+		val (lin,col) = (getLinCol (sigma))
+	in
+		if(lin-1 <= 0 orelse GoBotConfig.getMuroPos( (lin-1,col) ) = 1)
+          then sigma 
+          else fazAtribSig( ("GBlinha",lin-1),sigma)
+	end)
+
+fun moveE(sigma:Mem) = (
+    let
+		val (lin,col) = (getLinCol (sigma))
+	in
+		if(col-1 <= 0  orelse GoBotConfig.getMuroPos( (lin,col-1) ) = 1)
+          then sigma 
+          else fazAtribSig( ("GBcoluna",col-1),sigma)
+	end)
+
+fun moveD(sigma:Mem) = (
+    let
+        val (lin,col) = (getLinCol (sigma))
+	in
+		if(col+1 > GoBotConfig.largura orelse GoBotConfig.getMuroPos( (lin,col+1) ) = 1)
+          then sigma 
+          else fazAtribSig( ("GBcoluna",col+1),sigma)
+	end)
+
+fun getLuz (sigma:Mem) = GoBotConfig.getLuzPos(getLinCol(sigma));
+fun getTemp (sigma:Mem) = GoBotConfig.getTempPos(getLinCol(sigma));
+fun getMuro (sigma:Mem) = GoBotConfig.getMuroPos(getLinCol(sigma));
+
+fun clear(s:string) = let val n1 = size(s) val z = print(s) in substring(s,2,n1-4) end 
+
+(* antes só tinha essa função para operações, mas ela só tem int*)
+fun app_operb(x:int,y:int,z:string) = ( case z of "+" => (x+y)
+		                                      | "-" => (x-y)
+		                                      | "*" => (x*y)
+                                              | "++" => (x+y)
+                                              | "//" => ( (x*y) div (x + y) )
+		                                      | "/" => (x div y)
+		                                      | "%" => (x mod y)
+		                                      | "<" => ( (if (x < y) then 1 else 0) )
+		                                      | ">" => ( (if (x > y) then 1 else 0) )
+		                                      | "=" => (if (x = y) then 1 else 0)
+											  | "!=" => (if (x = y) then 0 else 1)
+                                              | ">=" => (if (x >= y) then 1 else 0)
+		                                      | "<=" => (if (x <= y) then 1 else 0)
+		                                      | "and" => (if (x*y>0) then 1 else 0)
+		                                      | "or" => (if (x+y>0) then 1 else 0)
+                                              | "^" => (let fun e (m,0) = 1
+                                                              | e (m,l) = m*e(m,l-1)
+                                                              in e (x,y)
+                                                        end)
+                         		              |   _  => (1) )
+
+
+(*função replicada para operar com float*)
+fun app_operb(x:float,y:float,z:string) = ( case z of "+" => (x+y)
+		                                      | "-" => (x-y)
+		                                      | "*" => (x*y)
+                                              | "++" => (x+y)
+                                              | "//" => ( (x*y) div (x + y) )
+		                                      | "/" => (x div y)
+		                                      | "%" => (x mod y)
+		                                      | "<" => ( (if (x < y) then 1 else 0) )
+		                                      | ">" => ( (if (x > y) then 1 else 0) )
+		                                      | "=" => (if (x = y) then 1 else 0)
+											  | "!=" => (if (x = y) then 0 else 1)
+                                              | ">=" => (if (x >= y) then 1 else 0)
+		                                      | "<=" => (if (x <= y) then 1 else 0)
+		                                      | "and" => (if (x*y>0) then 1 else 0)
+		                                      | "or" => (if (x+y>0) then 1 else 0)
+                                              | "^" => (let fun e (m,0) = 1
+                                                              | e (m,l) = m*e(m,l-1)
+                                                              in e (x,y)
+                                                        end)
+                         		              |   _  => (1) )
+
+%%
+
+%eop EOF
+
+(* %pos declares the type of positions for terminals.
+   Each symbol has an associated left and right position. *)
+
+%pos int
+
+(*adição dos elétricos e separação do int e float. Obs: antes era NUM*)
+
+%term OHM | AMPERE | VOLTS | ID of string | INT of int |FLOAT of float | TEXTO of string |  HOWAMI | MAPA| MOVEA | MOVEB | MOVEE | MOVED | SHOW |
+GET_ENERGY | GET_LIGHT | GET_TEMP  | NOOP | TIMES | PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT | TRUE | FALSE |  OPERB of string
+
+%nonterm EXP of (Mem -> int) | TERMO of (Mem -> int) | DECL of Trans | ATRIB of Trans | C_MOVEA of Trans | C_MOVEB of Trans| C_MOVEE of Trans | C_MOVED of Trans | START of Mem | CMD of Trans | BLOCO of Trans
+
+%name GoBot
+%prefer OPERB ID
+%noshift EOF
+%value ID ("bogus")
+%verbose
+%%
+
+(* the parser returns the value associated with the expression *)
+
+  START : BLOCO ( BLOCO(GoBotConfig.MemoriaInicial) )
+
+  BLOCO : CMD (CMD)
+        | CMD SEMI (CMD)
+        | CMD SEMI BLOCO (fn x => BLOCO(CMD x) )
+        
+  CMD : PRINT EXP (fn sigma => let val z = print ((Int.toString (EXP sigma)) ^ "\n") in sigma end)
+        | PRINT TEXTO (fn x => let val z = print ( (TEXTO)^"\n") in x end)
+		| DECL ( DECL)
+		| ATRIB ( ATRIB)		
+        | C_MOVEA    (C_MOVEA)
+        | C_MOVEB    (C_MOVEB)
+        | C_MOVEE 	 (C_MOVEE)
+        | C_MOVED    (C_MOVED)		
+    	| TEXTO ( fn x => x)
+    	| HOWAMI (fn x => let val z = printHowAmI(x) in x end)
+    	| SHOW (fn x => let val z = printMem(x,"",0) in x end)
+    	| MAPA (fn x => let val z = printLS(GoBotConfig.listaMapa,"") in x end)
+        | NOOP ( fn x => x)
+
+  DECL : TYPE ID 			(fn sigma => defVarSig (ID,TYPE,sigma) )
+
+  ATRIB : ID ATR EXP    (fn sigma => fazAtribSig( (ID,EXP(sigma)),sigma) )
+
+  
+                                                                
+  
+
+  C_MOVEA : MOVEA           (fn sigma => move(sigma,moveA))
+  C_MOVEB : MOVEB           (fn sigma => move(sigma,moveB))
+  C_MOVEE : MOVEE		    (fn sigma => move(sigma,moveE))
+  C_MOVED : MOVED		    (fn sigma => move(sigma,moveD))
+
+  EXP : TERMO               (TERMO)
+  | LPAR EXP RPAR           (EXP)
+  | LPAR EXP RPAR OPERB LPAR EXP RPAR (fn sigma => app_operb(EXP1(sigma),EXP2(sigma),OPERB) )
+  | TERMO OPERB LPAR EXP RPAR (fn sigma => app_operb(TERMO(sigma),EXP(sigma),OPERB) )
+  | LPAR EXP RPAR OPERB TERMO (fn sigma => app_operb(EXP(sigma),TERMO(sigma),OPERB) )
+  | TERMO OPERB TERMO (fn sigma => app_operb(TERMO1(sigma),TERMO2(sigma),OPERB) )
+  | NOT LPAR EXP RPAR   (fn sigma => if(EXP(sigma)=0) then 1 else 0)
+
+
+(* Aqui também foi feita a criação dos eletricos e separação de INT e FLOAT. OBS: antes era NUM*)
+  TERMO : INT      (fn sigma => INT)
+    | FLOAT        (fn sigma => FLOAT)
+    | OHM          (fn sigma => OHM)
+    | AMPERE       (fn sigma => AMPERE)
+    | VOLTS        (fn sigma => VOLTS)
+    | TRUE         (fn sigma => 1)
+    | FALSE        (fn sigma => 0)            
+    | ID           (fn sigma => lookupSig(ID,sigma))
+    | GET_ENERGY   (fn sigma => getEnergia(sigma))
+    | GET_LIGHT	   (fn sigma => getLuz(sigma))
+    | GET_TEMP	   (fn sigma => getTemp(sigma))
+	
+	
+
+
+	

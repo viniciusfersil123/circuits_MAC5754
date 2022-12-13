@@ -16,3 +16,6 @@ Repositório para desenvolvimento da linguagem Circuits para disciplina MAC5754
 [Introduction to Grammars and BNF](https://www.youtube.com/watch?v=F25ez8s3AsQ)
 
 
+## Testar gobot
+Na pasta do projeto, rodar a shell de instalação
+`./build-run-GoBot.sh subida.gbt`

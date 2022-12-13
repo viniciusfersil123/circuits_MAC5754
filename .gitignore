@@ -1,0 +1,5 @@
+.cm/
+gobot-image*
+log.txt
+goBot.lex.*
+goBot.grm.*

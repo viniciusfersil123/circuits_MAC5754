@@ -1,0 +1,50 @@
+int ultCol;
+int ultLin;
+resistor r1;
+resistor r2;
+
+r1 <- 5;
+r2 <- 10;
+print (r1 ++ r2);
+print (r1 // r2);
+
+ultCol <- 0;
+ultLin <- 0;
+ultCol <- ultCol + 1;
+
+delay;
+delay;
+delay;
+delay;
+moveD;
+delay;
+moveD;
+delay;
+moveD;
+delay;
+moveD;
+delay;
+moveA;
+delay;
+moveA;
+delay;
+moveA;
+delay;
+moveA;
+delay;
+moveE;
+delay;
+moveE;
+delay;
+moveE;
+delay;
+moveE;
+delay;
+moveB;
+delay;
+moveB;
+delay;
+moveB;
+delay;
+
+
