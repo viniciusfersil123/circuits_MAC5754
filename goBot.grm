@@ -2,6 +2,7 @@
 datatype CircuitsType =
   CircuitsInt of int
   | CircuitsFloat of real
+  | CircuitsResistor of real
   | CircuitsBool of bool
 
 type Mem = (string*CircuitsType) list
@@ -12,6 +13,7 @@ val Memoria : Mem = nil
 fun CircuitsTypeToString(c:CircuitsType) = (
     case c of CircuitsInt c => Int.toString(c)
     | CircuitsFloat c => Real.toString(c)
+    | CircuitsResistor c => Real.toString(c)
     | CircuitsBool c => Bool.toString(c)
 )
 
@@ -30,6 +32,7 @@ fun defVarSig (s: string, t :string, sigma:Mem) = (*let val z = printMem sigma i
     | nil => (
         if (t = "int") then [(s, CircuitsInt 0)]
         else if (t = "float") then [(s, CircuitsFloat 0.0)]
+        else if (t = "resistor") then [(s, CircuitsResistor 0.0)]
         else if (t = "bool") then [(s, CircuitsBool false)]
         else let val z = print("Tipo invalido!\n") in sigma end
     )
@@ -80,16 +83,26 @@ fun module(x:CircuitsType, y:CircuitsType) = (
     case (x, y) of
         (CircuitsInt x, CircuitsInt y) => CircuitsInt(x mod y)
         |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+)
 
+fun series(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsResistor x, CircuitsResistor y) => CircuitsResistor( x + y )
+        |   _  => let val z = print("Warning: Operação series não permitida!\n") in CircuitsInt ~998 end
+)
+
+fun paralel(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsResistor x, CircuitsResistor y) => CircuitsResistor( (x*y) / (x + y) )
+        |   _  => let val z = print("Warning: Operação paralel não permitida!\n") in CircuitsInt ~998 end
 )
 
 fun app_operb(x:CircuitsType, y:CircuitsType, z:string) = (
     case z of "+" => sum(x, y)
     | "-" => substract(x, y)
     | "*" => times(x, y)
-    (* | "++" => series(x, y)
-    | "//" => ( (x*y) / (x + y) )
-    | "//" => paralel(x, y) *)
+    | "++" => series(x, y)
+    | "//" => paralel(x, y)
     | "/" => division(x, y)
     | "%" => module(x, y)
     (* | "<" => ( (if (x < y) then 1 else 0) )
@@ -121,7 +134,7 @@ fun app_operb(x:CircuitsType, y:CircuitsType, z:string) = (
 NOOP | TIMES | PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT | TRUE of bool | FALSE of bool |  OPERB of string
 
 %nonterm EXP of (Mem -> CircuitsType) | TERMO of (Mem -> CircuitsType) | DECL of Trans | ATRIB of Trans |
-START of Mem | CMD of Trans | BLOCO of Trans
+START of Mem | CMD of Trans | BLOCO of Trans | GRANDEZA_FISICA of (Mem -> CircuitsType)
 
 %name GoBot
 %prefer OPERB ID
@@ -159,6 +172,9 @@ START of Mem | CMD of Trans | BLOCO of Trans
 
   TERMO : INT      (fn sigma => CircuitsInt INT)
     | FLOAT        (fn sigma => CircuitsFloat FLOAT)
+    | GRANDEZA_FISICA ( GRANDEZA_FISICA )
     | TRUE         (fn sigma => CircuitsBool TRUE)
     | FALSE        (fn sigma => CircuitsBool FALSE)
     | ID           (fn sigma => lookupSig(ID,sigma))
+
+  GRANDEZA_FISICA : FLOAT OHM (fn sigma => CircuitsResistor FLOAT)
