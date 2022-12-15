@@ -1,0 +1,13 @@
+int ultCol;
+int ultLin;
+float novofloat;
+
+ultCol <- 0;
+ultLin <- 0;
+ultCol <- ultCol + 1;
+novofloat <- 3.14;
+
+print( ultCol );
+print( novofloat );
+print( novofloat + 3.0 );
+print( 2.0 * novofloat );

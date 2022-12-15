@@ -1,0 +1,164 @@
+(* goBot definitions for ML-Yacc *)
+datatype CircuitsType =
+  CircuitsInt of int
+  | CircuitsFloat of real
+  | CircuitsBool of bool
+
+type Mem = (string*CircuitsType) list
+type Trans = (Mem -> Mem)
+
+val Memoria : Mem = nil
+
+fun CircuitsTypeToString(c:CircuitsType) = (
+    case c of CircuitsInt c => Int.toString(c)
+    | CircuitsFloat c => Real.toString(c)
+    | CircuitsBool c => Bool.toString(c)
+)
+
+fun printMem (sigma:Mem, s:string, i :int) = (case sigma of nil => print(s^"FIM\n")
+      | (x::xs) => let val z = Int.toString(i)^" "^ (#1 x) ^"="^CircuitsTypeToString(#2 x) ^ "\n"
+                                 in printMem(xs,s^z,i+1) end)
+
+fun printLS (lista:string list, s:string) = (case lista of nil => print(s^"FIM\n")
+                                          | (x::xs) => printLS(xs,s^x) )
+
+fun defVarSig (s: string, t :string, sigma:Mem) = (*let val z = printMem sigma in*) ( 
+    case sigma of (x::xs) => (
+        if ((#1 x) = s) then let val z = print("Variável "^s^" ja declarada!\n") in sigma end
+        else x::defVarSig (s, t, xs)
+    )
+    | nil => (
+        if (t = "int") then [(s, CircuitsInt 0)]
+        else if (t = "float") then [(s, CircuitsFloat 0.0)]
+        else if (t = "bool") then [(s, CircuitsBool false)]
+        else let val z = print("Tipo invalido!\n") in sigma end
+    )
+)
+
+fun lookupSig (s: string, sigma:Mem) = (*let val z = printMem sigma in *)(
+        case sigma of nil => let val z = print("Warning: Variável "^(s)^" não declarada!\n") in CircuitsInt ~998 end
+                | (x::xs) => ( if ((#1 x) = (s)) then  (#2 x)
+                               else  lookupSig(s,xs) )
+        ) (*end*)
+
+fun fazAtribSig (y: (string * CircuitsType), sigma:Mem) = (*let val z = printMem sigma in *) (
+    case sigma of nil => let val x = print("Variável "^(#1 y)^" não declarada!\n") in sigma end
+    | (x::xs) => (
+        if (#1 x) = (#1 y) then y::xs else x::fazAtribSig(y,xs)
+        )
+    ) (* end *)
+
+fun sum(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsInt x, CircuitsInt y) => CircuitsInt(x+y)
+        | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x+y)
+        |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+)
+
+fun substract(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsInt x, CircuitsInt y) => CircuitsInt(x-y)
+        | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x-y)
+        |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+)
+
+fun times(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsInt x, CircuitsInt y) => CircuitsInt(x*y)
+        | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x*y)
+        |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+)
+
+fun division(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsInt x, CircuitsInt y) => CircuitsInt(x div y)
+        | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x / y)
+        |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+)
+
+fun module(x:CircuitsType, y:CircuitsType) = (
+    case (x, y) of
+        (CircuitsInt x, CircuitsInt y) => CircuitsInt(x mod y)
+        |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
+
+)
+
+fun app_operb(x:CircuitsType, y:CircuitsType, z:string) = (
+    case z of "+" => sum(x, y)
+    | "-" => substract(x, y)
+    | "*" => times(x, y)
+    (* | "++" => series(x, y)
+    | "//" => ( (x*y) / (x + y) )
+    | "//" => paralel(x, y) *)
+    | "/" => division(x, y)
+    | "%" => module(x, y)
+    (* | "<" => ( (if (x < y) then 1 else 0) )
+    | ">" => ( (if (x > y) then 1 else 0) )
+    | "=" => (if (x = y) then 1 else 0)
+    | "!=" => (if (x = y) then 0 else 1)
+    | ">=" => (if (x >= y) then 1 else 0)
+    | "<=" => (if (x <= y) then 1 else 0)
+    | "and" => (if (x*y>0) then 1 else 0)
+    | "or" => (if (x+y>0) then 1 else 0)
+    | "^" => (let fun e (m,0) = 1
+                    | e (m,l) = m*e(m,l-1)
+                    in e (x,y)
+              end) *)
+    |   _  => let val z = print("Warning: Operação "^(z)^" não implementada!\n") in CircuitsInt ~998 end
+)
+%%
+
+%eop EOF
+
+(* %pos declares the type of positions for terminals.
+   Each symbol has an associated left and right position. *)
+
+%pos int
+
+(*adição dos elétricos e separação do int e float. Obs: antes era NUM*)
+
+%term OHM | AMPERE | VOLTS | ID of string | INT of int |FLOAT of real | TEXTO of string |
+NOOP | TIMES | PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT | TRUE of bool | FALSE of bool |  OPERB of string
+
+%nonterm EXP of (Mem -> CircuitsType) | TERMO of (Mem -> CircuitsType) | DECL of Trans | ATRIB of Trans |
+START of Mem | CMD of Trans | BLOCO of Trans
+
+%name GoBot
+%prefer OPERB ID
+%noshift EOF
+%value ID ("bogus")
+%verbose
+%%
+
+(* the parser returns the value associated with the expression *)
+
+  START : BLOCO (BLOCO( Memoria ))
+
+  BLOCO : CMD (CMD)
+        | CMD SEMI (CMD)
+        | CMD SEMI BLOCO (fn x => BLOCO(CMD x) )
+        
+  CMD : PRINT EXP (fn sigma => let val z = print ((CircuitsTypeToString(EXP sigma)) ^ "\n") in sigma end)
+        | PRINT TEXTO (fn x => let val z = print ( (TEXTO)^"\n") in x end)
+        | DECL ( DECL)
+        | ATRIB ( ATRIB)
+        | TEXTO ( fn x => x)
+        | NOOP ( fn x => x)
+
+  DECL : TYPE ID 			(fn sigma => defVarSig (ID,TYPE,sigma) )
+
+  ATRIB : ID ATR EXP    (fn sigma => fazAtribSig( (ID,EXP(sigma)),sigma) )
+
+  EXP : TERMO               (TERMO)
+  | LPAR EXP RPAR           (EXP)
+  | LPAR EXP RPAR OPERB LPAR EXP RPAR (fn sigma => app_operb(EXP1(sigma),EXP2(sigma),OPERB) )
+  | TERMO OPERB LPAR EXP RPAR (fn sigma => app_operb(TERMO(sigma),EXP(sigma),OPERB) )
+  | LPAR EXP RPAR OPERB TERMO (fn sigma => app_operb(EXP(sigma),TERMO(sigma),OPERB) )
+  | TERMO OPERB TERMO (fn sigma => app_operb(TERMO1(sigma),TERMO2(sigma),OPERB) )
+  (* | NOT LPAR EXP RPAR   (fn sigma => if(EXP(sigma)= CircuitsBool true) then CircuitsBool false else CircuitsBool true) *)
+
+  TERMO : INT      (fn sigma => CircuitsInt INT)
+    | FLOAT        (fn sigma => CircuitsFloat FLOAT)
+    | TRUE         (fn sigma => CircuitsBool TRUE)
+    | FALSE        (fn sigma => CircuitsBool FALSE)
+    | ID           (fn sigma => lookupSig(ID,sigma))
