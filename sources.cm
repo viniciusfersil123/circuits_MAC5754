@@ -7,7 +7,6 @@ Group is
   ml-yacc-lib.cm
 #endif
 
-  GoBotCore.sml
   goBot.grm
   goBot.lex
   goBot.sml
