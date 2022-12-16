@@ -20,10 +20,10 @@ print( 2.0 * novo_float );
 print( r1 ++ r2 );
 print( r1 // r2 );
 
-current i;
+current c;
 voltage v;
 
 v := 10.0 volts;
-i := ( v / r1 );
+c := ( v / r1 );
 
-print(i);
+print(c);
