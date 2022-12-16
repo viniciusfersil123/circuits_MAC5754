@@ -7,7 +7,15 @@ ultLin <- 0;
 ultCol <- ultCol + 1;
 novofloat <- 3.14;
 
+resistor r1;
+r1 <- 10.0 ohm;
+resistor r2;
+r2 <- 5.0 ohm;
+
 print( ultCol );
 print( novofloat );
 print( novofloat + 3.0 );
 print( 2.0 * novofloat );
+
+print( r1 ++ r2 );
+print( r1 // r2 );
