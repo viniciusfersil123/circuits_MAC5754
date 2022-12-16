@@ -41,7 +41,6 @@ alls = {letra}|{digito}|{operador}|{ws}|{dots};
 
 "("		=> (Tokens.LPAR(!pos,!pos));
 ")"		=> (Tokens.RPAR(!pos,!pos));
-"noop"      => (Tokens.NOOP(!pos,!pos));
 "not"      => (Tokens.NOT(!pos,!pos));
 "true"      => (Tokens.TRUE(true, !pos,!pos));
 "false"      => (Tokens.FALSE(false, !pos,!pos));

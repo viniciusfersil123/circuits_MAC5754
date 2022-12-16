@@ -19,3 +19,11 @@ print( 2.0 * novofloat );
 
 print( r1 ++ r2 );
 print( r1 // r2 );
+
+current i;
+voltage v;
+
+v <- 10.0 volts;
+i <- ( v / r1 );
+
+print(i);

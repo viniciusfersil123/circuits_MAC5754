@@ -3,6 +3,8 @@ datatype CircuitsType =
   CircuitsInt of int
   | CircuitsFloat of real
   | CircuitsResistor of real
+  | CircuitsVoltage of real
+  | CircuitsCurrent of real
   | CircuitsBool of bool
 
 type Mem = (string*CircuitsType) list
@@ -13,7 +15,9 @@ val Memoria : Mem = nil
 fun CircuitsTypeToString(c:CircuitsType) = (
     case c of CircuitsInt c => Int.toString(c)
     | CircuitsFloat c => Real.toString(c)
-    | CircuitsResistor c => Real.toString(c)
+    | CircuitsResistor c => Real.toString(c)^" Ohms"
+    | CircuitsVoltage c => Real.toString(c)^" Volts"
+    | CircuitsCurrent c => Real.toString(c)^" Amperes"
     | CircuitsBool c => Bool.toString(c)
 )
 
@@ -33,6 +37,8 @@ fun defVarSig (s: string, t :string, sigma:Mem) = (*let val z = printMem sigma i
         if (t = "int") then [(s, CircuitsInt 0)]
         else if (t = "float") then [(s, CircuitsFloat 0.0)]
         else if (t = "resistor") then [(s, CircuitsResistor 0.0)]
+        else if (t = "current") then [(s, CircuitsCurrent 0.0)]
+        else if (t = "voltage") then [(s, CircuitsVoltage 0.0)]
         else if (t = "bool") then [(s, CircuitsBool false)]
         else let val z = print("Tipo invalido!\n") in sigma end
     )
@@ -69,6 +75,8 @@ fun times(x:CircuitsType, y:CircuitsType) = (
     case (x, y) of
         (CircuitsInt x, CircuitsInt y) => CircuitsInt(x*y)
         | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x*y)
+        | (CircuitsCurrent x, CircuitsResistor y) => CircuitsVoltage(x*y)
+        | (CircuitsResistor x, CircuitsCurrent y) => CircuitsVoltage(x*y)
         |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
 )
 
@@ -76,6 +84,10 @@ fun division(x:CircuitsType, y:CircuitsType) = (
     case (x, y) of
         (CircuitsInt x, CircuitsInt y) => CircuitsInt(x div y)
         | (CircuitsFloat x, CircuitsFloat y) => CircuitsFloat(x / y)
+        | (CircuitsVoltage x, CircuitsResistor y) => CircuitsCurrent(x / y)
+        | (CircuitsVoltage x, CircuitsCurrent y) => CircuitsResistor(x / y)
+        | (CircuitsCurrent x, CircuitsVoltage y) => CircuitsResistor(x / y)
+        | (CircuitsResistor x, CircuitsVoltage y) => CircuitsCurrent(x / y)
         |   _  => let val z = print("Warning: Operação não permitida!\n") in CircuitsInt ~998 end
 )
 
@@ -128,10 +140,8 @@ fun app_operb(x:CircuitsType, y:CircuitsType, z:string) = (
 
 %pos int
 
-(*adição dos elétricos e separação do int e float. Obs: antes era NUM*)
-
 %term OHM | AMPERE | VOLTS | ID of string | INT of int |FLOAT of real | TEXTO of string |
-NOOP | TIMES | PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT | TRUE of bool | FALSE of bool |  OPERB of string
+PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT | TRUE of bool | FALSE of bool |  OPERB of string
 
 %nonterm EXP of (Mem -> CircuitsType) | TERMO of (Mem -> CircuitsType) | DECL of Trans | ATRIB of Trans |
 START of Mem | CMD of Trans | BLOCO of Trans | GRANDEZA_FISICA of (Mem -> CircuitsType)
@@ -156,7 +166,6 @@ START of Mem | CMD of Trans | BLOCO of Trans | GRANDEZA_FISICA of (Mem -> Circui
         | DECL ( DECL)
         | ATRIB ( ATRIB)
         | TEXTO ( fn x => x)
-        | NOOP ( fn x => x)
 
   DECL : TYPE ID 			(fn sigma => defVarSig (ID,TYPE,sigma) )
 
@@ -178,3 +187,5 @@ START of Mem | CMD of Trans | BLOCO of Trans | GRANDEZA_FISICA of (Mem -> Circui
     | ID           (fn sigma => lookupSig(ID,sigma))
 
   GRANDEZA_FISICA : FLOAT OHM (fn sigma => CircuitsResistor FLOAT)
+    | FLOAT AMPERE ( fn sigma => CircuitsCurrent FLOAT )
+    | FLOAT VOLTS ( fn sigma => CircuitsVoltage FLOAT )
