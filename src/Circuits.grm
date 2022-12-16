@@ -1,4 +1,4 @@
-(* goBot definitions for ML-Yacc *)
+(* Circuits definitions for ML-Yacc *)
 datatype CircuitsType =
   CircuitsInt of int
   | CircuitsFloat of real
@@ -136,7 +136,7 @@ NOOP | TIMES | PRINT |  SEMI | EOF | TYPE of string  | ATR | LPAR | RPAR | NOT |
 %nonterm EXP of (Mem -> CircuitsType) | TERMO of (Mem -> CircuitsType) | DECL of Trans | ATRIB of Trans |
 START of Mem | CMD of Trans | BLOCO of Trans | GRANDEZA_FISICA of (Mem -> CircuitsType)
 
-%name GoBot
+%name Circuits
 %prefer OPERB ID
 %noshift EOF
 %value ID ("bogus")

@@ -12,7 +12,7 @@ fun error (e,l : int,_) = TextIO.output (TextIO.stdOut, String.concat[
       ])
 
 %%
-%header (functor GoBotLexFun(structure Tokens: GoBot_TOKENS));
+%header (functor CircuitsLexFun(structure Tokens: Circuits_TOKENS));
 letra=[A-Za-z];
 digito=[0-9];
 int = {digito}+;
