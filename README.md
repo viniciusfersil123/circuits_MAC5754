@@ -1,12 +1,12 @@
 # Linguagem Circuits
 Repositório para desenvolvimento da linguagem Circuits para disciplina MAC-5754
 
-## O que é a Circuits
+## ⚡ O que é a Circuits
 Circuits é uma linguagem interpretada criada em SML que necessita de compilação para ser executada.
 
 A Circuits foi desenvolvida utilizando como inspiração as linguagens [Darwin](https://github.com/romefeller/darwin) e goBot, também desenvolvidas para a disciplina MAC-5754.
 
-## Utilizar a Circuits
+## 👩‍💻 Utilizar a Circuits
 
 ### Teste inicial
 Na pasta do projeto, rodar a shell de teste, que efetua a compilação e executa o exemplo `examples/teste.circ`
