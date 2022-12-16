@@ -1,21 +1,21 @@
 int ultCol;
 int ultLin;
-float novofloat;
+float novo_float;
 
-ultCol <- 0;
-ultLin <- 0;
-ultCol <- ultCol + 1;
-novofloat <- 3.14;
+ultCol := 0;
+ultLin := 0;
+ultCol := ultCol + 1;
+novo_float := 3.14;
 
 resistor r1;
-r1 <- 10.0 ohm;
+r1 := 10.0 ohm;
 resistor r2;
-r2 <- 5.0 ohm;
+r2 := 5.0 ohm;
 
 print( ultCol );
-print( novofloat );
-print( novofloat + 3.0 );
-print( 2.0 * novofloat );
+print( novo_float );
+print( novo_float + 3.0 );
+print( 2.0 * novo_float );
 
 print( r1 ++ r2 );
 print( r1 // r2 );
@@ -23,7 +23,7 @@ print( r1 // r2 );
 current i;
 voltage v;
 
-v <- 10.0 volts;
-i <- ( v / r1 );
+v := 10.0 volts;
+i := ( v / r1 );
 
 print(i);
