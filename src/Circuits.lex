@@ -37,7 +37,7 @@ alls = {letra}|{digito}|{operador}|{ws}|{dots};
 
 {operador}|"or"|">="|"<="|"!="|"and"|"++"|"//"  => (Tokens.OPERB(yytext,!pos,!pos));
 ";"      => (Tokens.SEMI(!pos,!pos));
-"<-"      => (Tokens.ATR(!pos,!pos));
+":="      => (Tokens.ATR(!pos,!pos));
 
 "("		=> (Tokens.LPAR(!pos,!pos));
 ")"		=> (Tokens.RPAR(!pos,!pos));
@@ -47,7 +47,7 @@ alls = {letra}|{digito}|{operador}|{ws}|{dots};
 
 "print"   => (Tokens.PRINT(!pos,!pos));
 
-{letra}({letra}|{digito})* => (Tokens.ID(yytext,!pos,!pos));
+{letra}({letra}|{digito}|"_")* => (Tokens.ID(yytext,!pos,!pos));
 \" {alls}* \" =>   (Tokens.TEXTO(yytext,!pos,!pos) ); 
 
 "."      => (error ("ignoring bad character "^yytext,!pos,!pos);
