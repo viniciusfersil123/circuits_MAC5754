@@ -1,37 +1,37 @@
-*******Instruções para geração e execução**********
+*******Instruï¿½ï¿½es para geraï¿½ï¿½o e execuï¿½ï¿½o**********
 
-Os arquivos deste diretório constituem a base para geração do parser e 
-posterior execução de programas escritos na linguagem goBot.
+Os arquivos deste diretï¿½rio constituem a base para geraï¿½ï¿½o do parser e 
+posterior execuï¿½ï¿½o de programas escritos na linguagem goBot.
 
-Dentre estes arquivos os mais importantes são: goBot.lex e goBot.grm.
-O primeiro possui a especificação para a análise léxica da linguagem e o 
-segundo a especificação da gramática para a geração do parser. Com estes dois 
-arquivos e as ferramentas ml-lex e ml-yacc você consegue gerar o parser (veja 
+Dentre estes arquivos os mais importantes sï¿½o: goBot.lex e goBot.grm.
+O primeiro possui a especificaï¿½ï¿½o para a anï¿½lise lï¿½xica da linguagem e o 
+segundo a especificaï¿½ï¿½o da gramï¿½tica para a geraï¿½ï¿½o do parser. Com estes dois 
+arquivos e as ferramentas ml-lex e ml-yacc vocï¿½ consegue gerar o parser (veja 
 os arquivos goBot.lex.sml e goBot.grm.sml) automaticamente. Para este exemplo 
-inicial o parser já foi gerado, mas você terá que atualizar os arquivos à 
-medida que estender a linguagem (goBot.lex e goBot.grm deverão ser alterados 
+inicial o parser jï¿½ foi gerado, mas vocï¿½ terï¿½ que atualizar os arquivos ï¿½ 
+medida que estender a linguagem (goBot.lex e goBot.grm deverï¿½o ser alterados 
 com os novos elementos). Para maiores detalhes visite: 
 http://www.smlnj.org/doc/ML-Lex/manual.html e 
 http://www.smlnj.org/doc/ML-Yacc/.
 
-Os demais arquivos são de configuração (config.txt) e de ambiente (mapa.txt) 
-e podem ser utilizados para executar os exemplos de programa que vocês 
+Os demais arquivos sï¿½o de configuraï¿½ï¿½o (config.txt) e de ambiente (mapa.txt) 
+e podem ser utilizados para executar os exemplos de programa que vocï¿½s 
 fizerem por enquanto. Note que eles podem ser alterados para novos ambientes 
-e configuração inicial do RM, é só seguir a formatção indicada no trabalho.
+e configuraï¿½ï¿½o inicial do RM, ï¿½ sï¿½ seguir a formatï¿½ï¿½o indicada no trabalho.
 
-Para executar um teste digite: sh exemplo1-1.sh e será aberta uma interface 
-gráfica na qual um robô irá se mover em um grid. O processamento do movimento 
-é feito com base na execução do programa subida.gbt, escrito em goBot. Se 
-você quiser ver a saída produzida diretamente pelo SML/NJ altere a segunda 
+Para executar um teste digite: sh exemplo1-1.sh e serï¿½ aberta uma interface 
+grï¿½fica na qual um robï¿½ irï¿½ se mover em um grid. O processamento do movimento 
+ï¿½ feito com base na execuï¿½ï¿½o do programa subida.gbt, escrito em goBot. Se 
+vocï¿½ quiser ver a saï¿½da produzida diretamente pelo SML/NJ altere a segunda 
 linha do script exemplo1-1.sh  removendo a chamada para o arquivo .jar e 
-execute o comando sh exemplo1-1.sh  novamente. Serão apresentados na shell 
-três inteiros: coluna, linha e luz que representam onde seu robô está e o que 
-ele está monitorando na posição.
+execute o comando sh exemplo1-1.sh  novamente. Serï¿½o apresentados na shell 
+trï¿½s inteiros: coluna, linha e luz que representam onde seu robï¿½ estï¿½ e o que 
+ele estï¿½ monitorando na posiï¿½ï¿½o.
 
-Nesta etapa, a linguagem permite que você faça o robô andar no grid, colete 
-informações do ambiente, efetue operações aritméticas e  atribuições.
+Nesta etapa, a linguagem permite que vocï¿½ faï¿½a o robï¿½ andar no grid, colete 
+informaï¿½ï¿½es do ambiente, efetue operaï¿½ï¿½es aritmï¿½ticas e  atribuiï¿½ï¿½es.
 
-Todos os arquivos deste diretório foram testados no seguinte ambiente:
+Todos os arquivos deste diretï¿½rio foram testados no seguinte ambiente:
 
 Java 1.6.0_27
 SO: Linux alexandre-IS-1003G 3.5.0-26-generic #42-Ubuntu SMP Fri Mar 8 

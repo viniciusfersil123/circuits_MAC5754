@@ -1,5 +1,5 @@
 
-structure GoBot : sig
+structure Circuits : sig
 	val parse : string -> unit                         
 	val parseStr : string -> unit          
 	val main : string * (string list) -> int               
@@ -7,23 +7,23 @@ structure GoBot : sig
 = struct
 
 
-  structure GoBotLrVals =
-    GoBotLrValsFun(structure Token = LrParser.Token)
+  structure CircuitsLrVals =
+    CircuitsLrValsFun(structure Token = LrParser.Token)
 
-  structure GoBotLex =
-    GoBotLexFun(structure Tokens = GoBotLrVals.Tokens)
+  structure CircuitsLex =
+    CircuitsLexFun(structure Tokens = CircuitsLrVals.Tokens)
 
-  structure GoBotParser =
+  structure CircuitsParser =
     Join(structure LrParser = LrParser
-	 structure ParserData = GoBotLrVals.ParserData
-	 structure Lex = GoBotLex)
+	 structure ParserData = CircuitsLrVals.ParserData
+	 structure Lex = CircuitsLex)
 
 
   fun invoke lexstream =
       let fun print_error (s,i:int,_) =
 	      TextIO.output(TextIO.stdOut,
 			    "Error, line " ^ (Int.toString i) ^ ", " ^ s ^ "\n")
-       in GoBotParser.parse(0,lexstream,print_error,())
+       in CircuitsParser.parse(0,lexstream,print_error,())
       end
 
    fun parseStr (strin: string) = 
@@ -31,7 +31,7 @@ structure GoBot : sig
             val lista: string list ref = ref [strin]
       in
          let 
-			val lexer = GoBotParser.makeLexer (fn _ => let 
+			val lexer = CircuitsParser.makeLexer (fn _ => let 
 			                                        val x = if(!lista = nil)
 			                                             then "" else hd(!lista)
                                                 		val z = if(!lista = nil)
@@ -41,13 +41,13 @@ structure GoBot : sig
 			                                            x
                                                 		end
                                                 		)
-	    val dummyEOF = GoBotLrVals.Tokens.EOF(0,0)
-    	    val dummySEMI = GoBotLrVals.Tokens.SEMI(0,0)
+	    val dummyEOF = CircuitsLrVals.Tokens.EOF(0,0)
+    	    val dummySEMI = CircuitsLrVals.Tokens.SEMI(0,0)
 	    fun loop lexer =
 	        let val (result,lexer) = invoke lexer
-		      val (nextToken,lexer) = GoBotParser.Stream.get lexer
+		      val (nextToken,lexer) = CircuitsParser.Stream.get lexer
 		      val _ = ()
-	           in if GoBotParser.sameToken(nextToken,dummyEOF) then ()
+	           in if CircuitsParser.sameToken(nextToken,dummyEOF) then ()
 		      else loop lexer
 	          end
            in loop lexer
@@ -57,16 +57,16 @@ structure GoBot : sig
   fun parse (arquivo: string) = 
 		
       let val file = TextIO.openIn arquivo
-			 val lexer = GoBotParser.makeLexer (fn _ => (case TextIO.inputLine file
+			 val lexer = CircuitsParser.makeLexer (fn _ => (case TextIO.inputLine file
 						                                       of SOME s => s
 						                                        | _ => ""))														
-	  val dummyEOF = GoBotLrVals.Tokens.EOF(0,0)
-	  val dummySEMI = GoBotLrVals.Tokens.SEMI(0,0)
+	  val dummyEOF = CircuitsLrVals.Tokens.EOF(0,0)
+	  val dummySEMI = CircuitsLrVals.Tokens.SEMI(0,0)
 	  fun loop lexer =
 	      let val (result,lexer) = invoke lexer
-		  val (nextToken,lexer) = GoBotParser.Stream.get lexer
+		  val (nextToken,lexer) = CircuitsParser.Stream.get lexer
 		  val _ = ()
-	       in if GoBotParser.sameToken(nextToken,dummyEOF) then ()
+	       in if CircuitsParser.sameToken(nextToken,dummyEOF) then ()
 		  else loop lexer
 	      end
        in loop lexer
@@ -80,6 +80,6 @@ structure GoBot : sig
 				1
 		end
 
-end (* structure GoBot *)
+end (* structure Circuits *)
 
 
